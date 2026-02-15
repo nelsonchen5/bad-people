@@ -5,49 +5,73 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Bad People</title>
 <style>
+  :root {
+    --bg: #1a1a2e; --bg2: #16213e; --bg3: #0f0f23; --text: #eee; --text2: #aaa;
+    --text3: #888; --text4: #555; --border: #333; --border2: #444;
+    --accent: #e94560; --accent2: #c73450; --card-bg: linear-gradient(145deg, #16213e 0%, #1a1a3e 50%, #1e1632 100%);
+    --input-bg: #16213e; --modal-bg: #16213e; --tally-bg: #0f0f23; --chip-bg: #16213e;
+    --history-bg: #1a1a2e; --pick-bg: #16213e; --pick-sel: #2a1a2e;
+  }
+  .light-mode {
+    --bg: #f5f0eb; --bg2: #fff; --bg3: #e8e0d8; --text: #1a1a2e; --text2: #555;
+    --text3: #777; --text4: #999; --border: #d4ccc4; --border2: #bbb;
+    --accent: #e94560; --accent2: #c73450; --card-bg: linear-gradient(145deg, #fff 0%, #fef6f0 50%, #fdf0e8 100%);
+    --input-bg: #fff; --modal-bg: #fff; --tally-bg: #e8e0d8; --chip-bg: #fff;
+    --history-bg: #f5f0eb; --pick-bg: #fff; --pick-sel: #fde8ec;
+  }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #1a1a2e;
-    color: #eee;
-    min-height: 100dvh;
-    overflow-x: hidden;
+    background: var(--bg); color: var(--text);
+    min-height: 100dvh; overflow-x: hidden;
+    transition: background 0.3s, color 0.3s;
   }
   .screen { display: none; min-height: 100dvh; padding: 20px; padding-bottom: 140px; }
   .screen.active { display: flex; flex-direction: column; align-items: center; }
 
+  /* ---- THEME TOGGLE ---- */
+  .theme-toggle {
+    position: fixed; top: 14px; right: 14px; z-index: 60;
+    background: var(--bg2); border: 1px solid var(--border); color: var(--text2);
+    padding: 6px 10px; border-radius: 20px; cursor: pointer; font-size: 1.1em;
+    transition: background 0.3s, border-color 0.3s;
+  }
+
   /* ---- SETUP ---- */
   #setup { justify-content: center; gap: 20px; padding-bottom: 20px; }
   #setup h1 {
-    font-size: 2.6em; color: #e94560; text-transform: uppercase;
+    font-size: 2.6em; color: var(--accent); text-transform: uppercase;
     letter-spacing: 3px; text-align: center;
   }
-  #setup .subtitle { color: #888; font-size: 0.9em; text-align: center; margin-bottom: 10px; }
+  #setup .subtitle { color: var(--text3); font-size: 0.9em; text-align: center; margin-bottom: 10px; }
   .player-input-area { width: 100%; max-width: 400px; }
-  .player-input-area label { font-size: 0.85em; color: #aaa; margin-bottom: 6px; display: block; }
+  .player-input-area label { font-size: 0.85em; color: var(--text2); margin-bottom: 6px; display: block; }
   .player-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
   .player-row input {
-    flex: 1; padding: 12px 14px; border-radius: 10px; border: 2px solid #333;
-    background: #16213e; color: #fff; font-size: 1em; outline: none;
+    flex: 1; padding: 12px 14px; border-radius: 10px; border: 2px solid var(--border);
+    background: var(--input-bg); color: var(--text); font-size: 1em; outline: none;
+    transition: background 0.3s, border-color 0.3s, color 0.3s;
   }
-  .player-row input:focus { border-color: #e94560; }
+  .player-row input:focus { border-color: var(--accent); }
   .player-row .remove-btn {
-    background: none; border: none; color: #e94560; font-size: 1.4em;
+    background: none; border: none; color: var(--accent); font-size: 1.4em;
     cursor: pointer; padding: 0 6px;
   }
-  .player-num { color: #555; font-size: 0.85em; min-width: 22px; text-align: right; }
+  .player-num { color: var(--text4); font-size: 0.85em; min-width: 22px; text-align: right; }
   .add-player-btn {
-    background: none; border: 2px dashed #333; color: #888; padding: 10px;
+    background: none; border: 2px dashed var(--border); color: var(--text3); padding: 10px;
     border-radius: 10px; width: 100%; cursor: pointer; font-size: 0.95em; margin-top: 4px;
+    transition: border-color 0.3s, color 0.3s;
   }
-  .add-player-btn:hover { border-color: #e94560; color: #e94560; }
+  .add-player-btn:hover { border-color: var(--accent); color: var(--accent); }
   .start-btn {
     margin-top: 16px; padding: 16px 48px; border-radius: 14px; border: none;
-    background: #e94560; color: #fff; font-size: 1.15em; font-weight: 700;
+    background: var(--accent); color: #fff; font-size: 1.15em; font-weight: 700;
     cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
   }
   .start-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .start-btn:not(:disabled):hover { background: #c73450; }
+  .start-btn:not(:disabled):hover { background: var(--accent2); }
 
   /* ---- GAME ---- */
   #game { justify-content: flex-start; gap: 10px; padding-top: 12px; }
@@ -55,12 +79,28 @@
     width: 100%; max-width: 500px; display: flex; justify-content: space-between;
     align-items: center; padding: 6px 0;
   }
-  .top-bar .round-info { font-size: 0.85em; color: #888; }
+  .top-bar .round-info { font-size: 0.85em; color: var(--text3); }
   .top-bar-btns { display: flex; gap: 6px; }
   .top-bar .menu-btn {
-    background: none; border: 1px solid #444; color: #aaa; padding: 6px 12px;
+    background: none; border: 1px solid var(--border2); color: var(--text2); padding: 6px 12px;
     border-radius: 8px; cursor: pointer; font-size: 0.8em;
+    transition: border-color 0.3s, color 0.3s;
   }
+
+  /* ---- HOT SEAT BANNER ---- */
+  .hot-seat-banner {
+    width: 100%; max-width: 500px; text-align: center; padding: 10px 16px;
+    border-radius: 12px; margin-bottom: 6px;
+    background: linear-gradient(135deg, #e94560 0%, #f39c12 100%);
+    color: #fff; font-weight: 700; font-size: 0.9em;
+    animation: hotSeatPulse 2s ease-in-out infinite;
+  }
+  @keyframes hotSeatPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+  }
+  .hot-seat-banner .hs-icon { font-size: 1.3em; margin-right: 4px; }
+  .hot-seat-banner .hs-name { font-size: 1.1em; }
 
   @keyframes cardEntry {
     0% { opacity: 0; transform: scale(0.92) rotateX(8deg); }
@@ -71,19 +111,20 @@
     100% { background-position: 200% center; }
   }
   @keyframes borderGlow {
-    0%, 100% { border-color: #e94560; box-shadow: 0 0 15px rgba(233,69,96,0.3); }
+    0%, 100% { border-color: var(--accent); box-shadow: 0 0 15px rgba(233,69,96,0.3); }
     50% { border-color: #f39c12; box-shadow: 0 0 25px rgba(243,156,18,0.4); }
   }
   .question-card {
     width: 100%; max-width: 500px; border-radius: 18px;
     padding: 32px 26px; text-align: center;
-    border: 2px solid #e94560;
+    border: 2px solid var(--accent);
     min-height: 120px; display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     position: relative; overflow: hidden;
-    background: linear-gradient(145deg, #16213e 0%, #1a1a3e 50%, #1e1632 100%);
+    background: var(--card-bg);
     box-shadow: 0 0 20px rgba(233,69,96,0.25), 0 8px 32px rgba(0,0,0,0.4);
     animation: cardEntry 0.4s ease-out, borderGlow 3s ease-in-out infinite;
+    transition: background 0.3s;
   }
   .question-card::before {
     content: ""; position: absolute; inset: 0; border-radius: 18px;
@@ -94,30 +135,36 @@
   }
   .question-card .q-label {
     font-size: 0.65em; text-transform: uppercase; letter-spacing: 3px;
-    color: #e94560; margin-bottom: 10px; opacity: 0.8;
+    color: var(--accent); margin-bottom: 10px; opacity: 0.8;
   }
   .question-card .q-text {
     font-size: 1.3em; line-height: 1.55; font-weight: 500;
     position: relative; z-index: 1;
   }
+  .ai-badge {
+    display: inline-block; font-size: 0.55em; vertical-align: middle;
+    background: rgba(233,69,96,0.15); color: var(--accent); padding: 2px 8px;
+    border-radius: 10px; margin-left: 6px; font-weight: 600; letter-spacing: 0.5px;
+  }
 
   .point-prompt { text-align: center; margin-top: 12px; }
   .point-prompt .point-icon { font-size: 2.4em; }
   .point-prompt .point-text { font-size: 1.1em; font-weight: 600; margin-top: 4px; color: #f1c40f; }
-  .point-prompt .point-sub { font-size: 0.85em; color: #888; margin-top: 4px; }
+  .point-prompt .point-sub { font-size: 0.85em; color: var(--text3); margin-top: 4px; }
 
   .action-row { display: flex; gap: 10px; margin-top: 8px; justify-content: center; }
   .skip-btn {
-    background: none; border: 1px solid #444; color: #888; font-size: 0.85em;
+    background: none; border: 1px solid var(--border2); color: var(--text3); font-size: 0.85em;
     cursor: pointer; padding: 8px 18px; border-radius: 10px;
+    transition: border-color 0.3s, color 0.3s;
   }
-  .skip-btn:hover { border-color: #e94560; color: #e94560; }
+  .skip-btn:hover { border-color: var(--accent); color: var(--accent); }
 
   .pick-label {
-    font-size: 0.85em; text-transform: uppercase; letter-spacing: 2px; color: #e94560;
+    font-size: 0.85em; text-transform: uppercase; letter-spacing: 2px; color: var(--accent);
     margin-top: 14px; text-align: center;
   }
-  .pick-sub { color: #888; font-size: 0.8em; text-align: center; margin-top: 2px; }
+  .pick-sub { color: var(--text3); font-size: 0.8em; text-align: center; margin-top: 2px; }
 
   .pick-grid {
     width: 100%; max-width: 500px; display: grid;
@@ -125,32 +172,40 @@
     gap: 10px; margin-top: 10px;
   }
   .pick-card {
-    padding: 16px 10px; border-radius: 12px; border: 2px solid #333;
-    background: #16213e; text-align: center; cursor: pointer; transition: all 0.15s;
+    padding: 16px 10px; border-radius: 12px; border: 2px solid var(--border);
+    background: var(--pick-bg); text-align: center; cursor: pointer; transition: all 0.15s;
     font-size: 1em; font-weight: 600;
   }
-  .pick-card:hover { border-color: #e94560; transform: scale(1.03); }
-  .pick-card.selected { border-color: #e94560; background: #2a1a2e; }
+  .pick-card:hover { border-color: var(--accent); transform: scale(1.03); }
+  .pick-card.selected { border-color: var(--accent); background: var(--pick-sel); }
 
   /* ---- PUNISHMENT BANNER ---- */
   .punishment-banner {
     width: 100%; max-width: 500px; text-align: center; padding: 24px 20px;
     border-radius: 14px; margin-top: 14px; position: relative; overflow: hidden;
   }
-  .punishment-banner.sip { background: linear-gradient(135deg, #2d3436 0%, #353b48 100%); border: 2px solid #e94560; }
-  .punishment-banner.half { background: linear-gradient(135deg, #e94560 0%, #c73450 100%); }
-  .punishment-banner.full { background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%); }
-  .punishment-banner.shot { background: linear-gradient(135deg, #e67e22 0%, #d35400 100%); }
-  .punishment-banner.buy-one { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); }
+  .punishment-banner.sip { background: linear-gradient(135deg, #2d3436 0%, #353b48 100%); border: 2px solid var(--accent); color: #eee; }
+  .punishment-banner.half { background: linear-gradient(135deg, #e94560 0%, #c73450 100%); color: #fff; }
+  .punishment-banner.full { background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%); color: #fff; }
+  .punishment-banner.shot { background: linear-gradient(135deg, #e67e22 0%, #d35400 100%); color: #fff; }
+  .punishment-banner.buy-one { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); color: #fff; }
   .punishment-banner.buy-all { background: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%); color: #1a1a2e; }
 
   .punishment-banner .p-emoji { font-size: 3em; margin-bottom: 6px; }
   .punishment-banner .p-name { font-size: 1.5em; font-weight: 800; margin: 4px 0; }
   .punishment-banner .p-label { font-size: 1.05em; font-weight: 600; margin: 4px 0; }
   .punishment-banner .p-sub { font-size: 0.8em; opacity: 0.75; margin-top: 4px; }
-  .tie-names { font-size: 1.2em; font-weight: 700; }
 
-  /* milestone sparkle */
+  /* ---- ALLIANCE BANNER ---- */
+  .alliance-banner {
+    width: 100%; max-width: 500px; text-align: center; padding: 18px 16px;
+    border-radius: 14px; margin-top: 10px;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: #fff;
+  }
+  .alliance-banner .a-title { font-size: 0.75em; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8; margin-bottom: 6px; }
+  .alliance-banner .a-names { font-size: 1.1em; font-weight: 700; margin-bottom: 8px; }
+  .alliance-banner .a-truth { font-size: 1em; font-style: italic; line-height: 1.4; }
+
   .milestone-tag {
     display: inline-block; padding: 4px 14px; border-radius: 20px;
     font-size: 0.75em; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
@@ -162,17 +217,17 @@
 
   .next-round-btn {
     margin-top: 14px; padding: 14px 40px; border-radius: 12px; border: none;
-    background: #e94560; color: #fff; font-size: 1em; font-weight: 700;
+    background: var(--accent); color: #fff; font-size: 1em; font-weight: 700;
     cursor: pointer; text-transform: uppercase;
   }
-  .next-round-btn:hover { background: #c73450; }
+  .next-round-btn:hover { background: var(--accent2); }
 
-  /* ---- LIVE TALLY BAR (bottom) ---- */
+  /* ---- LIVE TALLY BAR ---- */
   .live-tally {
     position: fixed; bottom: 0; left: 0; right: 0;
-    background: #0f0f23; border-top: 1px solid #333;
-    padding: 10px 16px; z-index: 50;
-    display: none;
+    background: var(--tally-bg); border-top: 1px solid var(--border);
+    padding: 10px 16px; z-index: 50; display: none;
+    transition: background 0.3s, border-color 0.3s;
   }
   .live-tally.active { display: block; }
   .live-tally-inner {
@@ -183,12 +238,13 @@
   .live-tally-inner::-webkit-scrollbar { display: none; }
   .lt-chip {
     flex-shrink: 0; display: flex; align-items: center; gap: 6px;
-    background: #16213e; padding: 6px 12px; border-radius: 10px;
+    background: var(--chip-bg); padding: 6px 12px; border-radius: 10px;
     font-size: 0.85em; white-space: nowrap;
+    transition: background 0.3s;
   }
   .lt-chip .lt-name { font-weight: 600; max-width: 70px; overflow: hidden; text-overflow: ellipsis; }
-  .lt-chip .lt-count { color: #e94560; font-weight: 700; font-size: 1.1em; }
-  .lt-chip.leader { border: 1px solid #e94560; }
+  .lt-chip .lt-count { color: var(--accent); font-weight: 700; font-size: 1.1em; }
+  .lt-chip.leader { border: 1px solid var(--accent); }
 
   /* ---- MODALS ---- */
   .modal-overlay {
@@ -197,40 +253,43 @@
   }
   .modal-overlay.active { display: flex; }
   .modal-box {
-    background: #16213e; border-radius: 16px; padding: 24px 20px;
+    background: var(--modal-bg); border-radius: 16px; padding: 24px 20px;
     width: 92%; max-width: 440px; max-height: 80vh; overflow-y: auto;
+    transition: background 0.3s;
   }
-  .modal-box h3 { margin-bottom: 12px; color: #e94560; text-align: center; }
+  .modal-box h3 { margin-bottom: 12px; color: var(--accent); text-align: center; }
   .modal-close-row { display: flex; justify-content: center; margin-top: 14px; }
   .modal-close-btn {
     padding: 10px 28px; border-radius: 10px; border: none; font-size: 0.95em;
-    cursor: pointer; font-weight: 600; background: #333; color: #aaa;
+    cursor: pointer; font-weight: 600; background: var(--border); color: var(--text2);
+    transition: background 0.3s, color 0.3s;
   }
-  .modal-box input {
-    width: 100%; padding: 12px; border-radius: 10px; border: 2px solid #333;
-    background: #1a1a2e; color: #fff; font-size: 1em; outline: none; margin-bottom: 10px;
-  }
-  .modal-box input:focus { border-color: #e94560; }
-  .modal-btns { display: flex; gap: 10px; justify-content: center; }
-  .modal-btns button {
-    padding: 10px 24px; border-radius: 10px; border: none; font-size: 0.95em;
-    cursor: pointer; font-weight: 600;
-  }
-  .modal-btns .modal-ok { background: #e94560; color: #fff; }
   .tally-row {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 10px 14px; border-radius: 10px; margin-bottom: 4px; background: #1a1a2e;
+    padding: 10px 14px; border-radius: 10px; margin-bottom: 4px; background: var(--history-bg);
+    transition: background 0.3s;
   }
   .tally-name { font-weight: 600; }
-  .tally-count { font-size: 1.3em; font-weight: 700; color: #e94560; min-width: 28px; text-align: center; }
-  .tally-drinks { font-size: 0.8em; color: #888; margin-left: 4px; }
+  .tally-count { font-size: 1.3em; font-weight: 700; color: var(--accent); min-width: 28px; text-align: center; }
+  .tally-drinks { font-size: 0.8em; color: var(--text3); margin-left: 4px; }
   .history-item {
-    padding: 10px 14px; border-radius: 10px; margin-bottom: 6px; background: #1a1a2e;
+    padding: 10px 14px; border-radius: 10px; margin-bottom: 6px; background: var(--history-bg);
+    transition: background 0.3s;
   }
-  .history-q { font-size: 0.9em; color: #ccc; margin-bottom: 3px; }
-  .history-who { font-size: 0.85em; color: #e94560; font-weight: 600; }
+  .history-q { font-size: 0.9em; color: var(--text2); margin-bottom: 3px; }
+  .history-who { font-size: 0.85em; color: var(--accent); font-weight: 600; }
 
-  /* emoji float animation */
+  /* ---- CONFETTI ---- */
+  @keyframes confettiFall {
+    0% { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); }
+    100% { opacity: 0; transform: translateY(120px) rotate(720deg) scale(0.3); }
+  }
+  .confetti-piece {
+    position: fixed; width: 10px; height: 10px; pointer-events: none; z-index: 200;
+    animation: confettiFall 1.5s ease-out forwards;
+  }
+
+  /* ---- FLOATING EMOJI (normal rounds) ---- */
   @keyframes floatUp {
     0% { opacity: 1; transform: translateY(0) scale(1); }
     100% { opacity: 0; transform: translateY(-120px) scale(1.5); }
@@ -242,6 +301,9 @@
 </style>
 </head>
 <body>
+
+<!-- ==================== THEME TOGGLE ==================== -->
+<button class="theme-toggle" id="themeToggle">&#9790;</button>
 
 <!-- ==================== SETUP ==================== -->
 <div id="setup" class="screen active">
@@ -281,21 +343,9 @@
   </div>
 </div>
 
-<!-- ==================== FILL BLANK MODAL ==================== -->
-<div class="modal-overlay" id="fillBlankModal">
-  <div class="modal-box" style="text-align:center;">
-    <h3>Fill in the Blank</h3>
-    <p id="fillBlankPreview" style="color:#aaa;margin-bottom:12px;font-size:0.9em;"></p>
-    <input type="text" id="fillBlankInput" placeholder="Fill in the blank...">
-    <div class="modal-btns">
-      <button class="modal-ok" id="fillBlankOk">Done</button>
-    </div>
-  </div>
-</div>
-
 <script>
-// ===================== QUESTIONS =====================
-const QUESTIONS = [
+// ===================== ORIGINAL QUESTIONS =====================
+const QUESTIONS_ORIGINAL = [
   "Most likely to blame their shit personality on their zodiac sign?",
   "Whose parents are the most disappointed in them?",
   "Who would give the worst lap dance?",
@@ -309,7 +359,6 @@ const QUESTIONS = [
   "Most likely to invest their savings in a glow-in-the-dark nipple tassel startup?",
   "Who will be the most difficult old person to be around?",
   "Most likely to have a secret sexual fetish?",
-  "Most likely to show up to an emergency room with a _____________ up their ass? [fill in blank]",
   "Who has slept with someone in the shortest amount of time after meeting them?",
   "Most likely to secretly run a meth lab?",
   "Most likely to join a cult?",
@@ -369,7 +418,6 @@ const QUESTIONS = [
   "Most likely to enter as a contestant on The Bachelor / The Bachelorette?",
   "Least likely to be remembered at a party?",
   "Who would be the most successful serial killer?",
-  "Most likely to get fired for ____________? [fill in blank]",
   "Most likely to have a midlife crisis?",
   "Most likely to murder their spouse for the insurance money and get away with it?",
   "Most likely to end up broke due to a gambling addiction?",
@@ -386,7 +434,6 @@ const QUESTIONS = [
   "If a big fire broke out right now, who would push everyone out of the way to get out first?",
   "Most likely to become a vegetarian because their partner wanted them to?",
   "Most likely to be randomly selected for additional screening when going through security?",
-  "Least likely to try _____________? [fill in blank]",
   "Who will be the next person to have a threesome?",
   "In their lifetime, who will have the least positive impact on the human species?",
   "If we were all therapists, who's most likely to sleep with their patients?",
@@ -395,7 +442,6 @@ const QUESTIONS = [
   "Most likely to become a liability after eating a pot brownie?",
   "Least likely to send a sext?",
   "Who has seen the most people in this room naked?",
-  "Who has had a sexual dream about _______________? [fill in blank]",
   "Most likely to have had sex in the back of a taxi or Uber?",
   "In their lifetime, who's most likely to become a pimp or madam?",
   "Who has done the most 'walks of shame'?",
@@ -405,7 +451,6 @@ const QUESTIONS = [
   "Most likely to fake an orgasm?",
   "If I was the ruthless dictator of a country, who would I choose as my second-in-command?",
   "Most likely to convince the group to play strip poker?",
-  "Who has the best tasting ______________? [fill in blank]",
   "They say, 'You can't judge a book by its cover.' Who did I misread when we first met?",
   "Most likely to 'not get the joke'?",
   "Most likely to cheat while playing a board game?",
@@ -428,7 +473,6 @@ const QUESTIONS = [
   "Who really needs to start making New Year's resolutions?",
   "Most likely to lie on their resume?",
   "Most likely to leave a party by blowing glitter in your face and disappearing?",
-  "Most likely to break up with someone because ____________? [fill in blank]",
   "Most likely to take home a 'souvenir' after a one-night stand?",
   "Who was the oldest when they lost their virginity?",
   "Who has the worst 'game'?",
@@ -447,7 +491,6 @@ const QUESTIONS = [
   "Most likely to puke and rally?",
   "Most likely to have a secret body piercing or tattoo?",
   "Most likely to have a secret sex tape?",
-  "Who could never say no to ________________? [fill in blank]",
   "Most likely to sleep with a co-worker?",
   "Most likely to masturbate right before getting a massage so they don't get awkwardly aroused?",
   "Who looks like they could suck the best dick?",
@@ -464,7 +507,6 @@ const QUESTIONS = [
   "Most likely to let someone buy them a drink before mentioning they're in a relationship?",
   "If we all had a contest for who could stay sober for a month, who's most likely to bomb out first?",
   "Most likely to be offended by someone's Halloween costume?",
-  "If everyone committed _____________, who would be the last person to get caught? [fill in blank]",
   "Most likely to talk shit about politics but doesn't vote?",
   "Most likely to complain about 'First World problems'?",
   "Most likely to go through their partner's phone?",
@@ -486,6 +528,219 @@ const QUESTIONS = [
   "Who gets paid too much for what they do?",
 ];
 
+// ===================== AI-GENERATED QUESTIONS =====================
+const QUESTIONS_AI = [
+  "Most likely to accidentally send a nude to the wrong person?",
+  "Who would survive the longest on a deserted island?",
+  "Most likely to peak in high school?",
+  "Who has the most embarrassing browser history?",
+  "Most likely to cry during a commercial?",
+  "If we all competed on a dating show, who would get eliminated first?",
+  "Most likely to ghost someone after a great first date?",
+  "Who would be the worst Uber driver?",
+  "Most likely to start a fight at a family gathering?",
+  "Who would last the longest in solitary confinement?",
+  "Most likely to accidentally set something on fire while cooking?",
+  "Who is secretly the biggest freak in the group?",
+  "Most likely to be the first one crying at the club?",
+  "Who would survive the shortest time in the wilderness?",
+  "Most likely to leave someone on read for 3+ days?",
+  "If we all had mugshots, whose would look the best?",
+  "Most likely to get a DUI on a scooter?",
+  "Who would fold the fastest under interrogation?",
+  "Most likely to hook up with a friend's ex?",
+  "Who has the worst taste in music but thinks they have the best?",
+  "Most likely to believe they were abducted by aliens?",
+  "If we were all in a heist crew, who would accidentally trip the alarm?",
+  "Most likely to have a secret OnlyFans account?",
+  "Who would throw everyone under the bus in a game of Mafia?",
+  "Most likely to get blackout drunk and befriend a stranger for life?",
+  "Who would be the worst babysitter?",
+  "Most likely to show up to their own wedding hungover?",
+  "If we all applied for the same job, who would bomb the interview the hardest?",
+  "Most likely to accidentally flash someone in public?",
+  "Who would be the most dramatic about a minor injury?",
+  "Most likely to date someone their friends all hate?",
+  "Who has lied the most in this game tonight?",
+  "Most likely to be catfished?",
+  "If we were all on a road trip, who would everyone vote to leave at a gas station?",
+  "Most likely to get into a bar fight over something stupid?",
+  "Who would be the worst wingman?",
+  "Most likely to ugly cry in front of a date?",
+  "If one of us became famous, who would sell the story to TMZ?",
+  "Most likely to still live with their parents at 40?",
+  "Who would be the most annoying person to sit next to on a long flight?",
+  "Most likely to get scammed by a Nigerian prince email?",
+  "Who has the most undeserved confidence?",
+  "Most likely to drunkenly propose to a stranger?",
+  "If we were all contestants on a cooking show, who would poison the judges?",
+  "Most likely to accidentally like a photo from 3 years ago while stalking someone?",
+  "Who has the loudest sex?",
+  "Most likely to get lost in their own neighborhood?",
+  "Who would be the first to sell out the group for a reality TV deal?",
+  "Most likely to have an emotional breakdown in an IKEA?",
+  "If we all got arrested together, who would snitch first?",
+  "Most likely to pretend they don't know you in public?",
+  "Who would be the worst at keeping a surprise party secret?",
+  "Most likely to start a GoFundMe for something ridiculous?",
+  "If we all got superpowers, who would become a villain?",
+  "Most likely to pee in a pool as an adult?",
+  "Who has the most toxic ex?",
+  "Most likely to be the reason the group chat goes silent?",
+  "If we all wrote books, whose would be the most disturbing?",
+  "Most likely to eat food off the floor when nobody's watching?",
+  "Who would be the worst motivational speaker?",
+  "Most likely to pretend to be rich on a first date?",
+  "If we were all on a sinking ship, who would push someone off the lifeboat?",
+  "Most likely to name their kid something ridiculous?",
+  "Who has the worst poker face?",
+  "Most likely to accidentally swear in front of a child?",
+  "If we all started a band, who would cause the breakup?",
+  "Most likely to take credit for someone else's work?",
+  "Who would survive the shortest time in jail?",
+  "Most likely to bring a flask to a work event?",
+  "If we all competed in the Olympics, who would get last place?",
+  "Most likely to fall asleep during sex?",
+  "Who would be the first to sell their soul for WiFi?",
+  "Most likely to post a thirst trap and pretend it's casual?",
+  "If we all ran for president, who would have the most scandals?",
+  "Most likely to drunk order $200 worth of food at 3am?",
+  "Who has the most embarrassing hidden talent?",
+  "Most likely to accidentally call their teacher 'mom'... as an adult?",
+  "If we all went to therapy, who would the therapist need therapy after seeing?",
+  "Most likely to have their credit card declined on a date?",
+  "Who would be the worst person to share a bathroom with?",
+  "Most likely to trip and fall in the most dramatic way possible?",
+  "If we all had to delete one social media, who would have the hardest time?",
+  "Most likely to get way too competitive at a children's game?",
+  "Who would cry first during a haunted house?",
+  "Most likely to get banned from an all-you-can-eat buffet?",
+  "If we were all spies, who would blow their cover in the first 5 minutes?",
+  "Most likely to use a cheesy pickup line unironically?",
+  "Who would be the worst person to go clothes shopping with?",
+  "Most likely to accidentally reply-all to a company email?",
+  "If we were all on a jury, who would fall asleep during the trial?",
+  "Most likely to get way too drunk at a work Christmas party?",
+  "Who is most likely to have a secret burner phone?",
+  "Most likely to be the person who never pays their share of the bill?",
+  "If we all had to fight each other, who would fight the dirtiest?",
+  "Most likely to get a tramp stamp ironically... then regret it?",
+  "Who would be the first person to crack on a survival reality show?",
+  "Most likely to lie about how many people they've slept with?",
+  "If we all lived in the same house, who would everyone want evicted first?",
+  "Most likely to have a mental breakdown over flat-pack furniture?",
+  "Who would be the worst designated driver?",
+  "Most likely to text 'you up?' at 2am to multiple people?",
+  "If we all had to give a TED talk, whose would be the most unhinged?",
+  "Most likely to lose their phone, keys, AND wallet on the same night?",
+  "Who would be the worst person to share a hotel room with?",
+  "Most likely to pass out before midnight on New Year's Eve?",
+  "If we all got stuck in a time loop, who would lose their mind first?",
+  "Most likely to pretend to know about wine at a fancy restaurant?",
+  "Who would be voted most likely to end up in a tabloid?",
+  "Most likely to get caught talking shit about someone who's right behind them?",
+  "If we all entered a talent show, who would get booed off stage?",
+  "Most likely to spend rent money on something stupid?",
+  "Who has the most regrettable hookup story?",
+  "Most likely to be the reason a party gets shut down by the cops?",
+  "If we all had our text messages leaked, whose would cause the biggest scandal?",
+  "Most likely to binge an entire TV series instead of going to work?",
+  "Who would be the worst person to be stranded with at an airport?",
+  "Most likely to accidentally walk into the wrong apartment and not realize it?",
+  "If we all had to roast each other, who would be the most savage?",
+  "Most likely to get into a Twitter feud with a celebrity?",
+  "Who is secretly the most judgmental person in this group?",
+  "Most likely to throw up on a roller coaster?",
+  "If we were all in a zombie movie, who would accidentally lead the zombies to the safe house?",
+  "Most likely to get a face tattoo on a dare?",
+  "Who has the worst morning breath?",
+  "Most likely to cry over a TikTok?",
+  "If we all ran a restaurant together, who would get us shut down by health inspectors?",
+  "Most likely to double dip at a party?",
+  "Who would be the most annoying person to live with?",
+  "Most likely to get way too personal with a stranger at a bar?",
+  "If we all played truth or dare, who would always pick dare?",
+  "Most likely to get kicked out of a casino?",
+  "Who would have the most chaotic wedding?",
+  "Most likely to forget their own anniversary?",
+  "If we all entered a beauty pageant, who would sabotage the competition?",
+  "Most likely to send a risky text and immediately throw their phone across the room?",
+  "Who is the biggest lightweight in this group?",
+  "Most likely to eat an edible and think they're dying 45 minutes later?",
+  "If we were all in a escape room, who would be completely useless?",
+  "Most likely to leave a passive-aggressive note instead of confronting someone?",
+  "Who would be the worst person to carpool with?",
+  "Most likely to go viral for the wrong reasons?",
+  "If we all got roasted by a comedian, who would handle it the worst?",
+  "Most likely to claim they're 'not that drunk' while clearly wasted?",
+  "Who would eat the spiciest food just to prove a point?",
+  "Most likely to accidentally reveal someone else's secret?",
+  "If we all were on a game show, who would press the wrong button at the worst time?",
+  "Most likely to have a breakdown over an outfit choice?",
+  "Who gives the worst gifts?",
+  "Most likely to ghost their own birthday party?",
+  "If we all went skydiving, who would chicken out at the last second?",
+  "Most likely to blame autocorrect for a text they definitely meant to send?",
+];
+
+// Combine with source tags
+const QUESTIONS = [
+  ...QUESTIONS_ORIGINAL.map(q => ({ text: q, ai: false })),
+  ...QUESTIONS_AI.map(q => ({ text: q, ai: true })),
+];
+
+// ===================== ALLIANCE TRUTH QUESTIONS =====================
+const ALLIANCE_TRUTHS = [
+  "What's one thing you've always wanted to ask the other person but never have?",
+  "What was your actual first impression of each other?",
+  "What's a secret you've never told the other person?",
+  "If you had to describe the other person's love life in one word, what would it be?",
+  "What's the most embarrassing thing you've seen the other person do?",
+  "What habit does the other person have that secretly annoys you?",
+  "If the other person wrote a dating profile, what's the one thing they'd definitely lie about?",
+  "What's the worst advice the other person has ever given you?",
+  "Rate the other person's dance moves from 1-10. Be honest.",
+  "What celebrity does the other person think they look like vs. who they actually look like?",
+  "What's one outfit the other person wore that you hated but never said anything?",
+  "If the other person went missing, what's the first place you'd check?",
+  "What's the other person's most predictable drunk behavior?",
+  "If you had to set the other person up on a blind date, what would you warn their date about?",
+  "What's one thing you admire about the other person but would never say sober?",
+  "If you could delete one photo of the other person from existence, which would it be?",
+  "What's the dumbest argument you two have ever had?",
+  "If the other person's life was a movie, what genre would it be?",
+  "What's one thing the other person does that's lowkey cringe?",
+  "If you two were the last people on Earth, how long before you'd annoy each other to death?",
+];
+
+// ===================== HOT SEAT QUESTIONS =====================
+const HOT_SEAT_QS = [
+  "What's the most embarrassing thing {name} has done in front of everyone here?",
+  "What's {name}'s biggest red flag in a relationship?",
+  "If {name} got arrested, what would it most likely be for?",
+  "What's the one thing {name} would never want their parents to find out about?",
+  "If {name} had a warning label, what would it say?",
+  "What's {name}'s most annoying habit that nobody talks about?",
+  "If {name} wrote an autobiography, what would the title be?",
+  "What's the worst piece of advice {name} has ever given?",
+  "What would {name}'s dating profile bio actually say if they were honest?",
+  "If {name}'s search history was projected on a screen right now, how screwed are they?",
+  "What's the dumbest thing {name} has ever spent money on?",
+  "If {name} was a flavor of ice cream, what flavor would they be and why?",
+  "What secret is {name} definitely hiding from this group?",
+  "If {name} was on a reality show, what would their villain edit look like?",
+  "What's {name}'s most irrational fear?",
+  "If {name} could only eat one food for the rest of their life, everyone knows it would be what?",
+  "What would {name} do with 24 hours of complete anonymity?",
+  "If {name}'s life had a theme song, what would it be?",
+  "What's the most unhinged thing {name} has ever said?",
+  "If {name} had a superpower, what would they use it for (and everyone knows it wouldn't be something noble)?",
+  "What's the most likely reason {name} would go viral?",
+  "If {name} opened a business, what disaster would it be?",
+  "What's {name}'s signature drunk move?",
+  "What's the one lie {name} tells ALL the time?",
+];
+
 // ===================== EMOJI REACTIONS =====================
 const REACT_SIP = ["😬","🤏","😅","🫣","🙈","😏","🤭"];
 const REACT_HALF = ["💀","😵","🫠","🤡","😭","🥴","☠️"];
@@ -493,36 +748,24 @@ const REACT_FULL = ["⚰️","🪦","💀","😵‍💫","🫡","😱","☠️"]
 const REACT_SHOT = ["🔥","🥃","💣","🤮","😈","🫠","💥"];
 const REACT_BUY_ONE = ["💸","🤑","👑","🎰","💰","🫡","🤝"];
 const REACT_BUY_ALL = ["🏆","💸","👑","🎊","🤑","💀","😈","🫠"];
+const CONFETTI_COLORS = ["#e94560","#f1c40f","#2ecc71","#3498db","#9b59b6","#e67e22","#1abc9c","#ff6b81"];
 
 function randFrom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
 // ===================== PUNISHMENT LOGIC =====================
-// Normal round: 1-5 random sips
-// At 4 cumulative drinks: half drink (~50%), full drink (~25%), shot (~20%), buy someone a round (~5%)
-// At 8 cumulative drinks: half drink (~30%), full drink (~30%), shot (~25%), buy someone (~10%), buy all (~5%)
-// At 12+ cumulative drinks: half drink (~15%), full drink (~25%), shot (~25%), buy someone (~20%), buy all (~15%)
-
 function getPunishment(player, allPlayers) {
-  const d = player.drinks; // drinks BEFORE this round (already incremented, so -1)
-  const prevDrinks = d - 1;
-
-  // Check if this drink hits a milestone (every 4th)
+  const d = player.drinks;
   if (d > 0 && d % 4 === 0) {
     return getMilestonePunishment(d, player, allPlayers);
   }
-
-  // Normal round: random sips
   const sips = randInt(1, 5);
   const emoji = randFrom(REACT_SIP);
-  const sipWords = ["sip","sips"];
   return {
-    type: "sip",
-    emoji,
+    type: "sip", emoji,
     label: `Take ${sips} ${sips === 1 ? "sip" : "sips"}!`,
     sub: sips >= 4 ? "Ouch." : (sips <= 2 ? "Lucky..." : ""),
-    cssClass: "sip",
-    milestone: false,
+    cssClass: "sip", milestone: false,
   };
 }
 
@@ -532,61 +775,35 @@ function getMilestonePunishment(drinks, player, allPlayers) {
 
   if (drinks >= 12) {
     milestoneLabel = "MEGA MILESTONE";
-    if (roll < 0.15) { type = "half"; }
-    else if (roll < 0.40) { type = "full"; }
-    else if (roll < 0.65) { type = "shot"; }
-    else if (roll < 0.85) { type = "buy-one"; }
-    else { type = "buy-all"; }
+    if (roll < 0.15) type = "half";
+    else if (roll < 0.40) type = "full";
+    else if (roll < 0.65) type = "shot";
+    else if (roll < 0.85) type = "buy-one";
+    else type = "buy-all";
   } else if (drinks >= 8) {
     milestoneLabel = "DOUBLE MILESTONE";
-    if (roll < 0.30) { type = "half"; }
-    else if (roll < 0.60) { type = "full"; }
-    else if (roll < 0.85) { type = "shot"; }
-    else if (roll < 0.95) { type = "buy-one"; }
-    else { type = "buy-all"; }
+    if (roll < 0.30) type = "half";
+    else if (roll < 0.60) type = "full";
+    else if (roll < 0.85) type = "shot";
+    else if (roll < 0.95) type = "buy-one";
+    else type = "buy-all";
   } else {
     milestoneLabel = "MILESTONE";
-    if (roll < 0.50) { type = "half"; }
-    else if (roll < 0.75) { type = "full"; }
-    else if (roll < 0.95) { type = "shot"; }
-    else { type = "buy-one"; }
+    if (roll < 0.50) type = "half";
+    else if (roll < 0.75) type = "full";
+    else if (roll < 0.95) type = "shot";
+    else type = "buy-one";
   }
 
-  // Pick a random other player for "buy one"
   const others = allPlayers.filter(p => p.name !== player.name);
   const luckyPerson = others.length > 0 ? randFrom(others).name : "someone";
 
   switch (type) {
-    case "half":
-      emoji = randFrom(REACT_HALF);
-      label = "Finish HALF your drink!";
-      sub = `${drinks} drinks deep... it's getting real`;
-      cssClass = "half";
-      break;
-    case "full":
-      emoji = randFrom(REACT_FULL);
-      label = "Finish your ENTIRE drink!";
-      sub = `${drinks} drinks... RIP`;
-      cssClass = "full";
-      break;
-    case "shot":
-      emoji = randFrom(REACT_SHOT);
-      label = "Take a SHOT!";
-      sub = `${drinks} drinks and counting...`;
-      cssClass = "shot";
-      break;
-    case "buy-one":
-      emoji = randFrom(REACT_BUY_ONE);
-      label = `Buy ${esc(luckyPerson)} a drink!`;
-      sub = `${drinks} drinks... time to spread the love`;
-      cssClass = "buy-one";
-      break;
-    case "buy-all":
-      emoji = randFrom(REACT_BUY_ALL);
-      label = "BUY A ROUND FOR EVERYONE!";
-      sub = `${drinks} drinks... you brought this on yourself`;
-      cssClass = "buy-all";
-      break;
+    case "half": emoji = randFrom(REACT_HALF); label = "Finish HALF your drink!"; sub = `${drinks} drinks deep... it's getting real`; cssClass = "half"; break;
+    case "full": emoji = randFrom(REACT_FULL); label = "Finish your ENTIRE drink!"; sub = `${drinks} drinks... RIP`; cssClass = "full"; break;
+    case "shot": emoji = randFrom(REACT_SHOT); label = "Take a SHOT!"; sub = `${drinks} drinks and counting...`; cssClass = "shot"; break;
+    case "buy-one": emoji = randFrom(REACT_BUY_ONE); label = `Buy ${esc(luckyPerson)} a drink!`; sub = `${drinks} drinks... time to spread the love`; cssClass = "buy-one"; break;
+    case "buy-all": emoji = randFrom(REACT_BUY_ALL); label = "BUY A ROUND FOR EVERYONE!"; sub = `${drinks} drinks... you brought this on yourself`; cssClass = "buy-all"; break;
   }
 
   return { type, emoji, label, sub, cssClass, milestone: true, milestoneLabel };
@@ -598,11 +815,18 @@ let state = {
   round: 1,
   usedQuestions: new Set(),
   currentQuestion: "",
+  currentIsAI: false,
   phase: "question",
   history: [],
   _picked: new Set(),
   _losers: [],
   _punishments: {},
+  _allianceTruth: null,
+  // Hot seat
+  hotSeat: null,       // player name or null
+  hotSeatRound: 0,     // rounds into hot seat (1-3)
+  hotSeatUsed: new Set(),
+  nextHotSeatAt: randInt(4, 7), // first hot seat trigger
 };
 
 // ===================== DOM =====================
@@ -615,6 +839,15 @@ const $roundInfo = $("roundInfo");
 
 let playerCount = 3;
 
+// ===================== THEME =====================
+let lightMode = false;
+$("themeToggle").addEventListener("click", () => {
+  lightMode = !lightMode;
+  document.body.classList.toggle("light-mode", lightMode);
+  $("themeToggle").innerHTML = lightMode ? "&#9728;" : "&#9790;";
+});
+
+// ===================== SETUP =====================
 function renderPlayerInputs() {
   const existing = [...document.querySelectorAll(".p-name")].map(i => i.value);
   $playerInputs.innerHTML = "";
@@ -656,7 +889,7 @@ $("newGameBtn").addEventListener("click", () => { showScreen("setup"); $("liveTa
 $("historyBtn").addEventListener("click", () => {
   let html = "";
   if (state.history.length === 0) {
-    html = `<p style="color:#888;text-align:center;padding:16px;">No rounds played yet.</p>`;
+    html = `<p style="color:var(--text3);text-align:center;padding:16px;">No rounds played yet.</p>`;
   } else {
     [...state.history].reverse().forEach((h, i) => {
       html += `<div class="history-item">
@@ -670,18 +903,30 @@ $("historyBtn").addEventListener("click", () => {
 });
 $("historyClose").addEventListener("click", () => $("historyModal").classList.remove("active"));
 
-// Fill blank modal
-$("fillBlankOk").addEventListener("click", () => {
-  const val = $("fillBlankInput").value.trim();
-  if (val) {
-    state.currentQuestion = state.currentQuestion.replace(/_+/g, val).replace(/\[fill in blank\]/gi, "").trim();
-    $("fillBlankModal").classList.remove("active");
-    state.phase = "question";
-    render();
+// ===================== CONFETTI =====================
+function spawnConfetti(count = 40) {
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const el = document.createElement("div");
+      el.className = "confetti-piece";
+      const color = randFrom(CONFETTI_COLORS);
+      const size = randInt(6, 12);
+      const shape = Math.random() > 0.5 ? "50%" : "0";
+      el.style.width = size + "px";
+      el.style.height = size + "px";
+      el.style.background = color;
+      el.style.borderRadius = shape;
+      el.style.left = (5 + Math.random() * 90) + "vw";
+      el.style.top = (5 + Math.random() * 30) + "vh";
+      el.style.animationDuration = (1 + Math.random() * 1) + "s";
+      el.style.animationDelay = (Math.random() * 0.3) + "s";
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2500);
+    }, i * 30);
   }
-});
+}
 
-// ===================== FLOATING EMOJIS =====================
+// ===================== FLOATING EMOJIS (non-milestone) =====================
 function spawnEmojis(emoji, count = 5) {
   for (let i = 0; i < count; i++) {
     setTimeout(() => {
@@ -723,29 +968,55 @@ function startGame() {
   state.round = 1;
   state.usedQuestions = new Set();
   state.history = [];
+  state.hotSeat = null;
+  state.hotSeatRound = 0;
+  state.hotSeatUsed = new Set();
+  state.nextHotSeatAt = randInt(4, 7);
   showScreen("game");
   updateLiveTally();
   drawQuestion();
 }
 
 function drawQuestion() {
+  // Hot seat logic
+  if (state.hotSeat && state.hotSeatRound < 3) {
+    // Draw a hot seat question
+    state.hotSeatRound++;
+    const available = HOT_SEAT_QS.filter((_, i) => !state.hotSeatUsed.has(i));
+    if (available.length === 0) state.hotSeatUsed = new Set();
+    let idx;
+    do { idx = Math.floor(Math.random() * HOT_SEAT_QS.length); } while (state.hotSeatUsed.has(idx));
+    state.hotSeatUsed.add(idx);
+    state.currentQuestion = HOT_SEAT_QS[idx].replace(/\{name\}/g, state.hotSeat);
+    state.currentIsAI = false;
+    state.phase = "question";
+    render();
+    return;
+  }
+
+  // End hot seat after 3 rounds
+  if (state.hotSeat && state.hotSeatRound >= 3) {
+    state.hotSeat = null;
+    state.hotSeatRound = 0;
+    state.nextHotSeatAt = state.round + randInt(4, 7);
+  }
+
+  // Check if it's time for a hot seat
+  if (!state.hotSeat && state.round >= state.nextHotSeatAt) {
+    const candidate = randFrom(state.players);
+    state.hotSeat = candidate.name;
+    state.hotSeatRound = 0;
+    drawQuestion(); // recurse to draw first hot seat question
+    return;
+  }
+
+  // Normal question draw
   if (state.usedQuestions.size >= QUESTIONS.length) state.usedQuestions = new Set();
   let idx;
   do { idx = Math.floor(Math.random() * QUESTIONS.length); } while (state.usedQuestions.has(idx));
   state.usedQuestions.add(idx);
-  state.currentQuestion = QUESTIONS[idx];
-
-  if (state.currentQuestion.includes("[fill in blank]")) {
-    state.phase = "question";
-    render();
-    const preview = state.currentQuestion.replace(/\[fill in blank\]/gi, "").trim();
-    $("fillBlankPreview").textContent = preview;
-    $("fillBlankInput").value = "";
-    $("fillBlankModal").classList.add("active");
-    setTimeout(() => $("fillBlankInput").focus(), 100);
-    return;
-  }
-
+  state.currentQuestion = QUESTIONS[idx].text;
+  state.currentIsAI = QUESTIONS[idx].ai;
   state.phase = "question";
   render();
 }
@@ -754,7 +1025,14 @@ function render() {
   $roundInfo.textContent = `Round ${state.round}`;
   let html = "";
 
-  html += `<div class="question-card"><div class="q-label">Bad People</div><div class="q-text">${esc(state.currentQuestion)}</div></div>`;
+  // Hot seat banner
+  if (state.hotSeat) {
+    html += `<div class="hot-seat-banner"><span class="hs-icon">🔥</span> HOT SEAT: <span class="hs-name">${esc(state.hotSeat)}</span> (${state.hotSeatRound}/3)</div>`;
+  }
+
+  // Question card
+  const aiTag = state.currentIsAI ? `<span class="ai-badge">🤖 AI</span>` : "";
+  html += `<div class="question-card"><div class="q-label">Bad People ${aiTag}</div><div class="q-text">${esc(state.currentQuestion)}</div></div>`;
 
   if (state.phase === "question") {
     html += `<div class="point-prompt">
@@ -787,7 +1065,7 @@ function render() {
 
   $gameContent.innerHTML = html;
 
-  // Bind
+  // Bind events
   if (state.phase === "question") {
     $("skipBtn")?.addEventListener("click", drawQuestion);
     $("whoGotItBtn")?.addEventListener("click", () => { state.phase = "pick"; state._picked = new Set(); render(); });
@@ -796,7 +1074,7 @@ function render() {
       card.addEventListener("click", () => {
         const name = card.dataset.name;
         if (state._picked.has(name)) state._picked.delete(name); else state._picked.add(name);
-        render(); // re-render to update button state
+        render();
       });
     });
     $("nobodyBtn")?.addEventListener("click", () => {
@@ -808,6 +1086,7 @@ function render() {
       if (state._picked.size === 0) return;
       state._losers = [...state._picked];
       state._punishments = {};
+      state._allianceTruth = null;
 
       // Increment drinks and compute punishments
       state._losers.forEach(name => {
@@ -818,7 +1097,11 @@ function render() {
         }
       });
 
-      // Build history result string
+      // Alliance: if 2+ people tied, add a truth question
+      if (state._losers.length >= 2) {
+        state._allianceTruth = randFrom(ALLIANCE_TRUTHS);
+      }
+
       const parts = state._losers.map(name => {
         const pun = state._punishments[name];
         return `${name}: ${pun.label}`;
@@ -829,9 +1112,15 @@ function render() {
       render();
       updateLiveTally();
 
-      // Spawn emojis for first loser's punishment
+      // Animations
       const firstPun = state._punishments[state._losers[0]];
-      if (firstPun) spawnEmojis(firstPun.emoji, firstPun.milestone ? 8 : 4);
+      if (firstPun) {
+        if (firstPun.milestone) {
+          spawnConfetti(50);
+        } else {
+          spawnEmojis(firstPun.emoji, 4);
+        }
+      }
     });
   } else if (state.phase === "result") {
     $("nextRoundBtn")?.addEventListener("click", () => {
@@ -860,6 +1149,16 @@ function renderResult() {
     if (pun.sub) html += `<div class="p-sub">${pun.sub}</div>`;
     html += `</div>`;
   });
+
+  // Alliance truth question for ties
+  if (state._allianceTruth && losers.length >= 2) {
+    const names = losers.map(n => esc(n)).join(" & ");
+    html += `<div class="alliance-banner">
+      <div class="a-title">⚔️ Alliance Formed ⚔️</div>
+      <div class="a-names">${names}</div>
+      <div class="a-truth">"${esc(state._allianceTruth)}"</div>
+    </div>`;
+  }
 
   html += `<button class="next-round-btn" id="nextRoundBtn">Next Round</button>`;
   return html;
